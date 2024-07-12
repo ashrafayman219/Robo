@@ -1,0 +1,104 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>ArcGIS Developer Guide: Local search (category)</title>
+     <!-- ArcGIS Mapping and Location Services Developer Guide
+    Learn more: https://developers.arcgis.com/documentation/mapping-and-location-services/search/
+    -->
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css">
+  <script src="https://js.arcgis.com/4.29"></script>
+
+  <script>
+    require([
+      "esri/config",
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/rest/locator",
+      "esri/Graphic"
+    ],(esriConfig, Map, MapView, locator, Graphic)=> {
+
+      esriConfig.apiKey = "AAPK756f006de03e44d28710cb446c8dedb4rkQyhmzX6upFiYPzQT0HNQNMJ5qPyO1TnPDSPXT4EAM_DlQSj20ShRD7vyKa7a1H";
+
+      const map = new Map({
+        basemap: "arcgis-streets-night" //Basemap styles service
+      });
+
+      const view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [2.34602,48.85880], // Paris
+        zoom: 13
+      });
+
+      view.popup.actions = [];
+
+      view.when(()=>{
+        findPlaces(view.center);
+      });
+
+      // Find places and add them to the map
+
+      function findPlaces(pt) {
+        const geocodingServiceUrl = "http://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer";
+
+        const params = {
+          categories: ["gas station"],
+          location: pt,  // Paris (2.34602,48.85880)
+          outFields: ["PlaceName","Place_addr"]
+        }
+
+        locator.addressToLocations(geocodingServiceUrl, params).then((results)=> {
+          showResults(results);
+        });
+
+      }
+
+      function showResults(results) {
+        view.popup.close();
+          view.graphics.removeAll();
+          results.forEach((result)=>{
+            view.graphics.add(
+              new Graphic({
+                attributes: result.attributes,
+                geometry: result.location,
+                symbol: {
+                 type: "simple-marker",
+                 color: "black",
+                 size: "10px",
+                 outline: {
+                   color: "#ffffff",
+                   width: "2px"
+                 }
+                },
+                popupTemplate: {
+                  title: "{PlaceName}",
+                  content: "{Place_addr}" + "<br><br>" + result.location.x.toFixed(5) + "," + result.location.y.toFixed(5)
+                }
+             }));
+          });
+          if (results.length) {
+            const g = view.graphics.getItemAt(0);
+            view.openPopup({
+              features: [g],
+              location: g.geometry
+            });
+          }
+      }
+
+    });
+  </script>
+</head>
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>

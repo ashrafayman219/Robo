@@ -1,0 +1,119 @@
+<!-- esriConfig.apiKey = "AAPK756f006de03e44d28710cb446c8dedb4rkQyhmzX6upFiYPzQT0HNQNMJ5qPyO1TnPDSPXT4EAM_DlQSj20ShRD7vyKa7a1H"; -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>ArcGIS Developer Guide: Reverse geocoding</title>
+      <!-- ArcGIS Mapping and Location Services Developer Guide
+      Learn more: https://developers.arcgis.com/documentation/mapping-and-location-services/search/
+      -->
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css">
+  <script src="https://js.arcgis.com/4.29"></script>
+
+  <script>
+    require([
+      "esri/config",
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/Graphic",
+      "esri/rest/locator"
+    ],(esriConfig, Map, MapView, Graphic, locator)=> {
+
+      esriConfig.apiKey = "AAPK756f006de03e44d28710cb446c8dedb4rkQyhmzX6upFiYPzQT0HNQNMJ5qPyO1TnPDSPXT4EAM_DlQSj20ShRD7vyKa7a1H";
+
+      const map = new Map({
+        basemap: "osm-standard-relief", //Basemap styles service
+      });
+
+      const view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-79.3871, 43.6426], //???
+        zoom: 10,
+        constraints: {
+          snapToZoom: false
+        }
+      });
+
+      view.popup.actions = [];
+
+      view.when(() => {
+        reverseGeocode(view.center);
+      });
+
+      view.on("click", (event) => {
+        reverseGeocode(event.mapPoint);
+      });
+
+      function reverseGeocode(pt) {
+
+        const geocodingServiceUrl = "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer" ;
+
+        const params = {
+          location: pt
+        };
+
+        locator.locationToAddress(geocodingServiceUrl, params).then(
+          (response) => {
+            if (response) {
+              showPopup(response);
+            }
+          },
+          (err) => {
+            showPopup("No address found.", pt);
+          }
+        );
+
+      }
+
+      //Information shown when map is clicked
+      function showPopup(response) {
+        view.openPopup({
+          title: response.attributes.PlaceName || "Address",
+          content:
+            response.attributes.LongLabel +
+            "<br><br>" +
+            response.location.longitude.toFixed(5) +
+            ", " +
+            response.location.latitude.toFixed(5),
+          location: response.location,
+        });
+        addGraphic(response);
+      }
+
+      function addGraphic(response) {
+        if (!response.location) {
+          return;
+        }
+        view.graphics.removeAll();
+        view.graphics.add(
+          new Graphic({
+            symbol: {
+              type: "simple-marker",
+              outline: {
+                color: "white",
+                width: 1.5,
+              },
+              color: "black",
+              size: 6,
+            },
+            geometry: response.location,
+          })
+        );
+      }
+    });
+  </script>
+</head>
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>
