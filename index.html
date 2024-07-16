@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Robo App</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css"/>
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="https://js.arcgis.com/calcite-components/2.10.1/calcite.esm.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/2.10.1/calcite.css" />
+    <script src="https://js.arcgis.com/4.29/"></script>
+    
+    
+  </head>
+  <body>
+    <!-- <div id="submitForm">
+      <button id="submitButton">Get Direction Data</button>
+    </div> -->
+    
+    <!-- href="https://www.arcgis.com/apps/mapviewer/index.html?marker=0;0;4326;Null Island;;&center=0;0&level=6" -->
+    <!-- icon-end="launch" -->
+    
+    <div id="displayMap">
+    
+    </div>
+
+
+    <calcite-label id="lab">
+      Points from GPS
+    <calcite-input id="long-lat-from" placeholder="Enter your region" prefix-text="First Pt" value = "4.4699, 50.5039" disabled></calcite-input>
+    <calcite-input id="long-lat-to" placeholder="Enter your region" prefix-text="Second Pt" value = "4.4699, 51.5039" disabled></calcite-input>
+    
+  </calcite-label>
+
+
+
+
+    <calcite-button
+    style="width: 100%;"
+    id="findF"
+    icon-end="surface"
+    label="Find First Address"
+    target="_blank">
+    Find First Address
+  </calcite-button>
+
+  <calcite-button
+  style="width: 100%;"
+  id="findS"
+  icon-end="surface"
+  label="Find Second Addess"
+  target="_blank">
+  Find Second Addess
+</calcite-button>
+
+<calcite-button
+style="width: 50%;"
+id="startdriving"
+icon-end="beginning"
+label="Save the data to the server"
+target="_blank">
+  Start Trip
+</calcite-button>
+
+    <calcite-button
+    style="width: 100%;"
+    id="reportdata"
+    icon-end="file-report-generic"
+    label="Display the report"
+    target="_blank">
+      Get Report Data
+  </calcite-button>
+
+
+    <calcite-accordion id="report-data">
+      <calcite-accordion-item description="First" heading="First Addess" icon-start="car" expanded>
+          <calcite-notice open id="calcite-notice">
+              <!-- <div id="firstAddress" slot="message">Recommended for usage</div> -->
+          </calcite-notice>
+      </calcite-accordion-item>
+      <calcite-accordion-item icon-start="car" heading="Second Addess" description="Second" expanded>
+          <calcite-notice open id="calcite-notice01">
+              <!-- <div slot="message">A good choice for inland adventure</div> -->
+          </calcite-notice>
+      </calcite-accordion-item>
+      <calcite-accordion-item icon-start="plane" heading="Trip data" description="Driving Trip Data" expanded>
+          <calcite-notice open id="calcite-notice02">
+              <!-- <div slot="message">Cross continents quickly</div> -->
+          </calcite-notice>
+      </calcite-accordion-item>
+  </calcite-accordion>
+
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
